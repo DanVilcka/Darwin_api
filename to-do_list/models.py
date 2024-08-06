@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -12,7 +12,10 @@ class Privelige(Base):
     update = Column(Boolean, default=True)
     item_id = Column(Integer, ForeignKey("items.id"))
     user_id = Column(Integer, ForeignKey("users.id"))
-    
+
+    __table_args__ = (
+        UniqueConstraint('user_id', 'item_id', name='uq_privileges_user_id_item_id'),
+    )
 
     items_con = relationship("Item", back_populates="item_id")
     users_con = relationship("User", back_populates="priveliges")
