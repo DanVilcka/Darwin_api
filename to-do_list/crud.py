@@ -39,6 +39,8 @@ def get_items(db: Session, skip: int = 0, limit: int = 100):
 def get_items_by_id(db: Session, item_id: int):
     return db.query(models.Item).filter(models.Item.id == item_id).first()
 
+def get_items_by_user(db: Session, user_id: int):
+    return db.query(models.Privilege, models.Item).join(models.Item, models.Privilege.user_id == models.Item.owner_id).filter(models.Privilege.user_id == user_id, models.Item.owner_id == user_id).all()
 
 def create_user_item(db: Session, item: schemas.ItemCreate, user_id: int):
     db_item = models.Item(**item.model_dump(), owner_id=user_id)
