@@ -1,7 +1,9 @@
 from sqlalchemy.orm import Session
+from passlib.context import CryptContext
 
 from . import models, schemas
 
+pwd_context = CryptContext(schemes=["bcrypt"], default="bcrypt")
 
 def get_user(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
@@ -16,12 +18,18 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
 
 
 def create_user(db: Session, user: schemas.UserCreate):
-    fake_hashed_password = user.password + "notreallyhashed"
-    db_user = models.User(email=user.email, hashed_password=fake_hashed_password)
+    hashed_password = hash_password(user.password)
+    db_user = models.User(email=user.email, hashed_password=hashed_password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
     return db_user
+
+def login_user(db: Session, user: schemas.UserCreate):
+    db_user = get_user_by_email(user.email)
+    verified_password = verify_password(user.password, db_user.password)
+    if verified_password:
+        return db_user
 
 
 def get_items(db: Session, skip: int = 0, limit: int = 100):
@@ -68,3 +76,9 @@ def delete_privelige(db: Session, item_id: int):
     db.delete(db_privelige)
     db.commit()
     return db_privelige
+
+def hash_password(password: str):
+    return pwd_context.hash(password)
+
+def verify_password(plain_password: str, hashed_password: str):
+    return pwd_context.verify(plain_password, hashed_password)
