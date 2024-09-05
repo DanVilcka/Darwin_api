@@ -39,8 +39,10 @@ class PriveligeBase(BaseModel):
     read: bool
     update: bool
 
+
 class PriveligeCreate(PriveligeBase):
     pass
+
 
 class Privelige(PriveligeBase):
 

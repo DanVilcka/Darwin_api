@@ -14,7 +14,7 @@ class Privelige(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
 
     __table_args__ = (
-        UniqueConstraint('user_id', 'item_id', name='uq_privileges_user_id_item_id'),
+        UniqueConstraint("user_id", "item_id", name="uq_privileges_user_id_item_id"),
     )
 
     items_con = relationship("Item", back_populates="item_id")
@@ -43,4 +43,3 @@ class User(Base):
 
     items = relationship("Item", back_populates="owner")
     priveliges = relationship("Privelige", back_populates="users_con")
-
